@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFSiegel Login - Demo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .header-kl {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container img {
+            height: 120px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+        
+        .brand-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+        }
+        
+        .demo-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-kl">
+        <div class="logo-container">
+            <img src="/kaiserslautern-logo.svg" alt="Stadt Kaiserslautern Logo">
+            <div class="brand-text">PDFSiegel</div>
+            <div class="tagline">Sicher. Einfach. Signiert.</div>
+        </div>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-card">
+            <h1 style="text-align: center; color: #dc2626; margin-bottom: 1rem;">Anmelden</h1>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 2rem;">
+                Melden Sie sich mit Ihren Active Directory Zugangsdaten an
+            </p>
+            
+            <form>
+                <div class="form-group">
+                    <label class="form-label" for="username">AD Nummer</label>
+                    <input type="text" id="username" class="form-control" placeholder="AD Nummer eingeben">
+                    <small style="color: #6b7280; margin-top: 0.25rem; display: block;">
+                        Verwenden Sie Ihre Active Directory Nummer
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Passwort</label>
+                    <input type="password" id="password" class="form-control" placeholder="Passwort eingeben">
+                </div>
+                
+                <button type="submit" class="btn-primary">Anmelden</button>
+            </form>
+            
+            <div class="demo-info">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Demo-Zugangsdaten</div>
+                <div><strong>Benutzername:</strong> admin, mchairman, user1</div>
+                <div><strong>Passwort:</strong> password</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

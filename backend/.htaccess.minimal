@@ -1,0 +1,22 @@
+# Minimale .htaccess für PDFSeal Backend
+
+# Verzeichnis-Schutz
+Options -Indexes
+
+# Sensible Dateien schützen
+<Files "*.inc">
+    Require all denied
+</Files>
+<Files "*.conf">
+    Require all denied
+</Files>
+<Files "*.sql">
+    Require all denied
+</Files>
+<Files "*.sh">
+    Require all denied
+</Files>
+
+# Error-Reporting aktivieren
+php_flag display_errors On
+php_value error_reporting "E_ALL"

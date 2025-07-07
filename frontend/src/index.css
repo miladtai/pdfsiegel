@@ -1,0 +1,432 @@
+/* Barrierefreie Styles für PDFSeal */
+
+:root {
+  --kl-red: #dc2626;
+  --kl-red-dark: #991b1b;
+  --kl-gray-light: #f8f9fa;
+  --kl-gray: #6b7280;
+  --kl-gray-dark: #374151;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  background-color: var(--kl-gray-light);
+}
+
+/* Hochkontrast für bessere Barrierefreiheit */
+.high-contrast {
+  filter: contrast(150%);
+}
+
+/* Focus-Styles für Barrierefreiheit */
+*:focus {
+  outline: 3px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Kaiserslautern Branding */
+.header-kl {
+  background-color: var(--kl-red);
+  color: white;
+  padding: 0.75rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-kl .navbar-brand {
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+.header-kl .navbar-brand:hover {
+  color: #f1f5f9 !important;
+  text-decoration: none;
+}
+
+.header-kl .nav-link {
+  color: white !important;
+  font-weight: 500;
+}
+
+.header-kl .nav-link:hover {
+  color: #f1f5f9 !important;
+}
+
+/* Sidebar */
+.sidebar {
+  min-height: calc(100vh - 80px);
+  background-color: white;
+  border-right: 1px solid #dee2e6;
+  padding: 1.5rem 1rem;
+}
+
+.sidebar .nav-link {
+  color: var(--kl-gray-dark);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: var(--kl-red);
+  color: white;
+}
+
+.sidebar .nav-link:focus {
+  background-color: var(--kl-red);
+  color: white;
+}
+
+/* Main Content */
+.main-content {
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+/* PDF Upload Zone */
+.upload-zone {
+  border: 3px dashed #dee2e6;
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--kl-red);
+  background-color: #fef2f2;
+}
+
+.upload-zone.dragover {
+  transform: scale(1.02);
+}
+
+.upload-zone .upload-icon {
+  font-size: 3rem;
+  color: var(--kl-gray);
+  margin-bottom: 1rem;
+}
+
+.upload-zone.dragover .upload-icon {
+  color: var(--kl-red);
+}
+
+/* Cards */
+.card {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: var(--kl-red);
+  color: white;
+  font-weight: 600;
+  border-bottom: none;
+}
+
+/* Buttons */
+.btn-kl-primary {
+  background-color: var(--kl-red);
+  border-color: var(--kl-red);
+  color: white;
+  font-weight: 500;
+}
+
+.btn-kl-primary:hover,
+.btn-kl-primary:focus {
+  background-color: var(--kl-red-dark);
+  border-color: var(--kl-red-dark);
+  color: white;
+}
+
+.btn-kl-secondary {
+  background-color: var(--kl-gray);
+  border-color: var(--kl-gray);
+  color: white;
+}
+
+.btn-kl-secondary:hover,
+.btn-kl-secondary:focus {
+  background-color: var(--kl-gray-dark);
+  border-color: var(--kl-gray-dark);
+  color: white;
+}
+
+/* Forms */
+.form-control:focus {
+  border-color: var(--kl-red);
+  box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--kl-gray-dark);
+  margin-bottom: 0.5rem;
+}
+
+/* Tables */
+.table {
+  background-color: white;
+}
+
+.table thead th {
+  background-color: var(--kl-gray-light);
+  border-bottom: 2px solid var(--kl-red);
+  font-weight: 600;
+  color: var(--kl-gray-dark);
+}
+
+/* Alerts */
+.alert-kl-success {
+  background-color: #d1fae5;
+  border-color: #10b981;
+  color: #047857;
+}
+
+.alert-kl-danger {
+  background-color: #fee2e2;
+  border-color: var(--kl-red);
+  color: var(--kl-red-dark);
+}
+
+/* Loading Spinner */
+.spinner-kl {
+  color: var(--kl-red);
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip Link für Barrierefreiheit */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--kl-red);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Logo Styles */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Login-Page Specific Styles */
+.login-page {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+}
+
+.login-page .header-kl {
+  background-color: var(--kl-red);
+  border-bottom: 3px solid var(--kl-red-dark);
+}
+
+.login-page .logo-container img {
+  filter: brightness(0) invert(1);
+  transition: all 0.2s ease-in-out;
+}
+
+.login-page .logo-container:hover img {
+  filter: brightness(0) invert(1) opacity(0.9);
+}
+
+.login-page .card {
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem !important;
+}
+
+.login-page .card-body {
+  background: white;
+  border-radius: 1rem;
+}
+
+.login-page .form-control {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.login-page .form-control:focus {
+  border-color: var(--kl-red);
+  box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+}
+
+.login-page .btn-kl-primary {
+  background-color: var(--kl-red);
+  border-color: var(--kl-red);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.login-page .btn-kl-primary:hover,
+.login-page .btn-kl-primary:focus {
+  background-color: var(--kl-red-dark);
+  border-color: var(--kl-red-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.login-page .btn-kl-primary:disabled {
+  background-color: #6b7280;
+  border-color: #6b7280;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Logo Animation */
+.login-page .header-kl img {
+  transition: transform 0.3s ease;
+}
+
+.login-page .header-kl img:hover {
+  transform: scale(1.05);
+}
+
+/* PDF Vorschau Styles */
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  max-width: 100%;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+.react-pdf__Page__canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* PDF-Vorschau Styles */
+.pdf-preview {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.pdf-preview:hover {
+  transform: scale(1.02);
+}
+
+.pdf-preview-container {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.pdf-navigation {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-page-info {
+  font-weight: 600;
+  color: var(--kl-gray-dark);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Loading Spinner für PDF */
+.pdf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--kl-gray);
+}
+
+.pdf-loading .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Responsive PDF Vorschau */
+@media (max-width: 768px) {
+  .pdf-preview-container {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .pdf-navigation {
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .pdf-page-info {
+    font-size: 0.9rem;
+    min-width: 100px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .upload-zone {
+    padding: 2rem 1rem;
+  }
+}
