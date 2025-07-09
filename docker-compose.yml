@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # MySQL Database
+  # MySQL Database - Flexible Ports für MAMP/XAMPP Kompatibilität
   mysql:
     image: mysql:8.0
     container_name: pdfsiegel_mysql
@@ -11,24 +11,27 @@ services:
       MYSQL_USER: pdfuser
       MYSQL_PASSWORD: pdfpass
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"  # Default 3307, konfigurierbar via .env
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     networks:
       - pdfsiegel_network
+    restart: unless-stopped
 
-  # PHP Backend
+  # PHP Backend - Flexible für MAMP/XAMPP
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: pdfsiegel_backend
     ports:
-      - "8888:80"
+      - "${BACKEND_PORT:-8888}:80"  # Default 8890, vermeidet MAMP/XAMPP Konflikte
     volumes:
       - ./backend:/var/www/html
       - ./backend/uploads:/var/www/html/uploads
+      - ./backend/signed:/var/www/html/signed
+      - ./backend/logs:/var/www/html/logs
     depends_on:
       - mysql
     networks:
@@ -39,15 +42,19 @@ services:
       - DB_NAME=pdfsiegel
       - DB_USER=pdfuser
       - DB_PASS=pdfpass
+      - ENVIRONMENT=${ENVIRONMENT:-docker}
+      - MOCK_MODE=${MOCK_MODE:-true}
+      - LOCAL_SERVER=${LOCAL_SERVER:-none}  # mamp, xampp, none
+    restart: unless-stopped
 
-  # React Frontend
+  # React Frontend - Flexibel konfigurierbar
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: pdfsiegel_frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"  # Default 3001, konfigurierbar
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -56,7 +63,29 @@ services:
     networks:
       - pdfsiegel_network
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost:8888
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8888}
+      - REACT_APP_ENV=${REACT_APP_ENV:-docker}
+      - CHOKIDAR_USEPOLLING=true  # Für besseres File-Watching
+    restart: unless-stopped
+
+  # PHPMyAdmin - Optional für Datenbankmanagement
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: pdfsiegel_phpmyadmin
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    depends_on:
+      - mysql
+    networks:
+      - pdfsiegel_network
+    restart: unless-stopped
+    profiles:
+      - tools  # Nur laden wenn "tools" Profil aktiv ist
 
 volumes:
   mysql_data:

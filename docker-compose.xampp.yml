@@ -1,0 +1,51 @@
+# Docker Compose für XAMPP Integration
+# Nutzen mit: docker-compose -f docker-compose.yml -f docker-compose.xampp.yml up
+
+version: '3.8'
+
+services:
+  # MySQL mit XAMPP-kompatiblen Ports
+  mysql:
+    ports:
+      - "3308:3306"  # Vermeidet Konflikt mit XAMPP MySQL:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pdfsiegel
+      - MYSQL_USER=pdfuser
+      - MYSQL_PASSWORD=pdfpass
+
+  # Backend mit XAMPP-kompatiblen Ports
+  backend:
+    ports:
+      - "8891:80"  # Vermeidet Konflikt mit XAMPP Apache:80
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - ENVIRONMENT=xampp
+      - LOCAL_SERVER=xampp
+
+  # Frontend
+  frontend:
+    ports:
+      - "3001:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8891
+      - REACT_APP_ENV=xampp
+
+  # PHPMyAdmin
+  phpmyadmin:
+    ports:
+      - "8081:80"  # Vermeidet Konflikt mit XAMPP PHPMyAdmin
+    environment:
+      - PMA_HOST=mysql
+      - PMA_ARBITRARY=1
+
+  # Redis für Session-Management (XAMPP Standard)
+  redis:
+    image: redis:alpine
+    container_name: pdfsiegel_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pdfsiegel_network
+    restart: unless-stopped

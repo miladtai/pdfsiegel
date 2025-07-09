@@ -1,14 +1,24 @@
 # PDFSiegel - .gitignore
 
+# Environment-Dateien (außer Vorlagen)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Docker-spezifische Ausschlüsse
+docker-data/
+volumes/
+mysql_data/
+mysql_prod_data/
+docker-compose.override.yml
+docker-compose.local.yml
+
 # Node.js / React Frontend
 frontend/node_modules/
 frontend/build/
 frontend/dist/
-frontend/.env
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
@@ -20,7 +30,6 @@ backend/uploads/
 backend/signed/
 backend/logs/
 backend/tmp/
-backend/.env
 backend/config/database.local.php
 backend/config/config.local.php
 
@@ -76,17 +85,10 @@ Thumbs.db
 *.sql.dump
 database/dumps/
 
-# Docker-Volumes
-docker-data/
-volumes/
-
 # Sensitive Konfigurationsdateien
 backend/config/ldap.php
 backend/config/production.php
 backend/config/secrets.php
-.env
-.env.local
-.env.production
 
 # Composer/NPM Cache
 .composer/
@@ -100,7 +102,7 @@ coverage/
 package-lock.json
 yarn.lock
 
-# MAMP/Server-spezifische Dateien
+# MAMP/XAMPP/Server-spezifische Dateien
 *.pid
 *.sock
 

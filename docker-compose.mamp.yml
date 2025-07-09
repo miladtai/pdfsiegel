@@ -1,0 +1,43 @@
+# Docker Compose für MAMP Integration
+# Nutzen mit: docker-compose -f docker-compose.yml -f docker-compose.mamp.yml up
+
+version: '3.8'
+
+services:
+  # Nur MySQL und Tools, Backend/Frontend über MAMP
+  backend:
+    profiles:
+      - disabled  # Backend nicht starten
+    
+  frontend:
+    profiles:
+      - disabled  # Frontend nicht starten
+
+  # MySQL mit MAMP-kompatiblen Ports
+  mysql:
+    ports:
+      - "3307:3306"  # Vermeidet Konflikt mit MAMP MySQL:8889
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pdfsiegel
+      - MYSQL_USER=pdfuser  
+      - MYSQL_PASSWORD=pdfpass
+
+  # PHPMyAdmin für Docker MySQL
+  phpmyadmin:
+    ports:
+      - "8080:80"  # Eigener Port, da MAMP PHPMyAdmin auf anderem Port
+    environment:
+      - PMA_HOST=mysql
+      - PMA_ARBITRARY=1  # Erlaubt Verbindung zu externen DBs
+      - PMA_ABSOLUTE_URI=http://localhost:8080/
+
+  # Mailhog für E-Mail Testing (MAMP hat keinen Mailserver)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: pdfsiegel_mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - pdfsiegel_network

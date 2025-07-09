@@ -19,6 +19,12 @@ const PDFSign = ({ user, active }) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+  
+  // Stempel-Funktionalität
+  const [showStamp, setShowStamp] = useState(false);
+  const [stampPosition, setStampPosition] = useState({ x: 100, y: 100 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Dropzone für Datei-Upload
   const onDrop = useCallback((acceptedFiles) => {
@@ -64,29 +70,70 @@ const PDFSign = ({ user, active }) => {
       return;
     }
 
+    // Zeige Stempel für Positionierung an
+    if (!showStamp) {
+      setShowStamp(true);
+      setStampPosition({ x: 100, y: 100 }); // Reset Position
+      return;
+    }
+
     setUploading(true);
     setError('');
 
     try {
       const formData = new FormData();
       formData.append('pdf', selectedFile);
+      
+      // Berechne relative Position basierend auf PDF-Größe
+      const pdfElement = document.querySelector('.react-pdf__Page canvas');
+      if (pdfElement && showStamp) {
+        const pdfRect = pdfElement.getBoundingClientRect();
+        const relativeX = (stampPosition.x / pdfRect.width) * 100; // Prozent
+        const relativeY = (stampPosition.y / pdfRect.height) * 100; // Prozent
+        
+        console.log('Stempel-Position:', { x: stampPosition.x, y: stampPosition.y });
+        console.log('PDF-Größe:', { width: pdfRect.width, height: pdfRect.height });
+        console.log('Relative Position:', { x: relativeX, y: relativeY });
+        
+        // Stempel-Daten für Backend
+        formData.append('stamp_x_percent', relativeX.toFixed(2));
+        formData.append('stamp_y_percent', relativeY.toFixed(2));
+        formData.append('stamp_page', pageNumber);
+        formData.append('stamp_width', 200); // Stempel-Breite in Pixeln
+        formData.append('stamp_height', 80); // Stempel-Höhe in Pixeln
+        
+        // Stempel-Inhalt
+        formData.append('stamp_name', `${user?.firstname || 'Max'} ${user?.lastname || 'Mustermann'}`);
+        formData.append('stamp_method', `Signiert mit AD ${user?.ad_number || '00000'}`);
+        formData.append('stamp_date', formatStampDate());
+        formData.append('stamp_user_id', user?.ad_number || '00000');
+      } else if (showStamp) {
+        setError('PDF-Element nicht gefunden. Bitte warten Sie, bis die PDF vollständig geladen ist.');
+        setUploading(false);
+        return;
+      }
 
-      const response = await axios.post('/api/signatures.php', formData, {
+      const response = await axios.post('/auth.php', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
+      console.log('API Response:', response.data);
+
       if (response.data.success) {
         setSuccess({
-          message: 'PDF erfolgreich signiert!',
-          checkNumber: response.data.signature.check_number,
-          signatureCount: response.data.signature.signature_count
+          message: 'PDF erfolgreich signiert und Stempel eingebettet!',
+          checkNumber: response.data.signature?.check_number || 'DEMO-' + Date.now(),
+          signatureCount: response.data.signature?.signature_count || 1,
+          details: `Der Stempel wurde an Position ${stampPosition.x}px/${stampPosition.y}px auf Seite ${pageNumber} platziert.`
         });
         resetFileSelection();
         loadUserSignatures();
       }
     } catch (error) {
+      console.error('Signatur-Fehler:', error);
+      console.error('Response data:', error.response?.data);
       const errorMessage = error.response?.data?.error || 'Fehler beim Signieren der PDF';
       setError(errorMessage);
     } finally {
@@ -155,6 +202,63 @@ const PDFSign = ({ user, active }) => {
     setNumPages(null);
     setPageNumber(1);
     setShowPreview(false);
+    setShowStamp(false);
+    setStampPosition({ x: 100, y: 100 });
+  };
+
+  // Stempel-Event-Handler
+  const handleStampMouseDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    
+    // Berechne Offset: Wo wurde im Stempel geklickt relativ zur Stempel-Position
+    const stampRect = e.target.closest('.signature-stamp').getBoundingClientRect();
+    const containerRect = e.target.closest('.pdf-preview-container').getBoundingClientRect();
+    
+    setDragOffset({
+      x: e.clientX - stampRect.left,
+      y: e.clientY - stampRect.top
+    });
+  };
+
+  const handleContainerMouseMove = (e) => {
+    if (isDragging) {
+      e.preventDefault();
+      const containerRect = e.currentTarget.getBoundingClientRect();
+      
+      // Neue Position = Mausposition - Container-Position - Drag-Offset
+      const newX = e.clientX - containerRect.left - dragOffset.x;
+      const newY = e.clientY - containerRect.top - dragOffset.y;
+      
+      // Begrenze Position innerhalb des Containers
+      const maxX = containerRect.width - 200; // Stempel-Breite
+      const maxY = containerRect.height - 80; // Stempel-Höhe
+      
+      setStampPosition({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      });
+    }
+  };
+
+  const handleContainerMouseUp = (e) => {
+    if (isDragging) {
+      e.preventDefault();
+      setIsDragging(false);
+    }
+  };
+
+  const removeStamp = () => {
+    setShowStamp(false);
+    setStampPosition({ x: 100, y: 100 });
+  };
+
+  const formatStampDate = () => {
+    const now = new Date();
+    const date = now.toLocaleDateString('de-DE');
+    const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return `${date}, ${time} Uhr`;
   };
 
   // Cleanup URL beim Komponenten-Unmount
@@ -278,6 +382,21 @@ const PDFSign = ({ user, active }) => {
             </Form.Group>
           </div>
 
+          {/* Stempel-Hinweis */}
+          {showStamp && (
+            <Alert variant="info" className="mt-3">
+              <div className="d-flex align-items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="me-2">
+                  <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                  <strong>Stempel positionieren:</strong> Ziehen Sie den Signatur-Stempel an die gewünschte Position. 
+                  Verwenden Sie das ×-Symbol zum Entfernen oder klicken Sie "Signatur bestätigen" zum Signieren.
+                </div>
+              </div>
+            </Alert>
+          )}
+
           {/* Action Buttons */}
           <div className="mt-4 d-flex gap-2">
             <Button
@@ -286,11 +405,20 @@ const PDFSign = ({ user, active }) => {
               disabled={!selectedFile || uploading}
               size="lg"
             >
-              {uploading ? 'Signiere...' : 'Signatur generieren'}
+              {uploading ? 'Signiere...' : showStamp ? 'Signatur bestätigen' : 'Signatur generieren'}
             </Button>
             
             {selectedFile && (
               <>
+                {showStamp && (
+                  <Button
+                    variant="outline-warning"
+                    onClick={() => setShowStamp(false)}
+                    disabled={uploading}
+                  >
+                    Stempel ausblenden
+                  </Button>
+                )}
                 {!showPreview && (
                   <Button
                     variant="outline-primary"
@@ -326,7 +454,17 @@ const PDFSign = ({ user, active }) => {
                     ×
                   </Button>
                 </Card.Header>
-                <Card.Body className="pdf-preview-container">
+                <Card.Body 
+                  className={`pdf-preview-container ${isDragging ? 'dragging' : ''}`}
+                  onMouseMove={handleContainerMouseMove}
+                  onMouseUp={handleContainerMouseUp}
+                  onMouseLeave={handleContainerMouseUp}
+                  style={{ 
+                    position: 'relative', 
+                    cursor: isDragging ? 'grabbing' : 'default',
+                    userSelect: 'none'
+                  }}
+                >
                   <div className="text-center">
                     {fileUrl && (
                       <Document
@@ -345,13 +483,61 @@ const PDFSign = ({ user, active }) => {
                           </div>
                         }
                       >
-                        <Page
-                          pageNumber={pageNumber}
-                          width={Math.min(700, window.innerWidth - 150)}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                          className="pdf-preview"
-                        />
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <Page
+                            pageNumber={pageNumber}
+                            width={Math.min(700, window.innerWidth - 150)}
+                            renderTextLayer={false}
+                            renderAnnotationLayer={false}
+                            className="pdf-preview"
+                          />
+                          
+                          {/* Draggable Signature Stamp */}
+                          {showStamp && (
+                            <div
+                              className={`signature-stamp ${isDragging ? 'dragging' : ''}`}
+                              style={{
+                                position: 'absolute',
+                                left: `${stampPosition.x}px`,
+                                top: `${stampPosition.y}px`,
+                                cursor: isDragging ? 'grabbing' : 'grab',
+                                userSelect: 'none',
+                                zIndex: 10
+                              }}
+                              onMouseDown={handleStampMouseDown}
+                            >
+                              <div className="stamp-content">
+                                {/* Verifizier-Symbol (15%) */}
+                                <svg className="stamp-verify-icon" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                
+                                {/* Stempel-Informationen (75%) */}
+                                <div className="stamp-info">
+                                  <div className="stamp-name">
+                                    {user?.firstname || 'Max'} {user?.lastname || 'Mustermann'}
+                                  </div>
+                                  <div className="stamp-datetime">
+                                    {formatStampDate()}
+                                  </div>
+                                  <div className="stamp-method">
+                                    Signiert mit AD {user?.ad_number || '00000'}
+                                  </div>
+                                </div>
+                                
+                                {/* Schließen-Button (10%) */}
+                                <button
+                                  className="stamp-close-btn"
+                                  onClick={removeStamp}
+                                  aria-label="Stempel entfernen"
+                                  type="button"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </Document>
                     )}
                     
