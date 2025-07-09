@@ -212,13 +212,13 @@ const PDFSign = ({ user, active }) => {
     e.stopPropagation();
     setIsDragging(true);
     
-    // Berechne Offset: Wo wurde im Stempel geklickt relativ zur Stempel-Position
-    const stampRect = e.target.closest('.signature-stamp').getBoundingClientRect();
+    // Berechne Offset: Wo wurde im Stempel geklickt relativ zur Container-Position
     const containerRect = e.target.closest('.pdf-preview-container').getBoundingClientRect();
     
+    // Der Offset ist die Differenz zwischen Mausposition und aktueller Stempel-Position
     setDragOffset({
-      x: e.clientX - stampRect.left,
-      y: e.clientY - stampRect.top
+      x: e.clientX - containerRect.left - stampPosition.x,
+      y: e.clientY - containerRect.top - stampPosition.y
     });
   };
 
