@@ -1,0 +1,120 @@
+# PDFSiegel - .gitignore
+
+# Node.js / React Frontend
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# PHP Backend
+backend/vendor/
+backend/composer.lock
+backend/uploads/
+backend/signed/
+backend/logs/
+backend/tmp/
+backend/.env
+backend/config/database.local.php
+backend/config/config.local.php
+
+# Temporäre und Test-Dateien
+backend/test-*.php
+backend/debug-*.php
+backend/repair-*.php
+backend/mock-*.php
+backend/system-check.php
+backend/index.php.backup
+backend/.htaccess.backup
+backend/.htaccess.minimal
+
+# Session und Cache-Dateien
+backend/sessions/
+backend/cache/
+*.session
+*.cache
+
+# PDF-Dateien (außer Beispiele)
+*.pdf
+!backend/examples/*.pdf
+
+# Log-Dateien
+*.log
+backend/error.log
+backend/access.log
+
+# Backup-Dateien
+*.backup
+*.bak
+*.old
+*.orig
+
+# System-Dateien
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE/Editor-Dateien
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Database-Dumps
+*.sql.backup
+*.sql.dump
+database/dumps/
+
+# Docker-Volumes
+docker-data/
+volumes/
+
+# Sensitive Konfigurationsdateien
+backend/config/ldap.php
+backend/config/production.php
+backend/config/secrets.php
+.env
+.env.local
+.env.production
+
+# Composer/NPM Cache
+.composer/
+.npm/
+
+# Test-Coverage
+coverage/
+.nyc_output/
+
+# Lock-Dateien (optional, je nach Workflow)
+package-lock.json
+yarn.lock
+
+# MAMP/Server-spezifische Dateien
+*.pid
+*.sock
+
+# Temporäre API-Dateien (für Testing)
+/Applications/MAMP/htdocs/auth.php
+/Applications/MAMP/htdocs/test.php
+/Applications/MAMP/htdocs/pdfsiegel-api/
+/Applications/MAMP/htdocs/pdfsiegel-backend/
+
+# Cookies und temporäre Curl-Dateien
+cookies.txt
+*.cookie
+
+# Entwicklungs-Notizen
+TODO.md
+NOTES.md
+DEBUG.md
