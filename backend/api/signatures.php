@@ -2,6 +2,7 @@
 require_once '../config/config.php';
 require_once '../config/database.php';
 require_once '../classes/SignatureManager.php';
+require_once '../classes/PDFStamper.php';
 
 requireAuth();
 
@@ -65,13 +66,57 @@ if ($method === 'POST') {
             sendJsonResponse(['error' => 'File upload failed', 'target_path' => $uploadPath], 500);
         }
         
+        // Stempel-Daten sammeln falls vorhanden
+        $stampData = [];
+        if (isset($_POST['stamp_x_points'])) {
+            $stampData = [
+                'stamp_x_points' => $_POST['stamp_x_points'],
+                'stamp_y_points' => $_POST['stamp_y_points'],
+                'stamp_x_percent' => $_POST['stamp_x_percent'],
+                'stamp_y_percent' => $_POST['stamp_y_percent'],
+                'stamp_page' => $_POST['stamp_page'],
+                'stamp_width' => $_POST['stamp_width'],
+                'stamp_height' => $_POST['stamp_height'],
+                'stamp_width_points' => $_POST['stamp_width_points'],
+                'stamp_height_points' => $_POST['stamp_height_points'],
+                'pdf_width' => $_POST['pdf_width'],
+                'pdf_height' => $_POST['pdf_height'],
+                'canvas_width' => $_POST['canvas_width'],
+                'canvas_height' => $_POST['canvas_height'],
+                'stamp_name' => $_POST['stamp_name'],
+                'stamp_method' => $_POST['stamp_method'],
+                'stamp_date' => $_POST['stamp_date'],
+                'stamp_user_id' => $_POST['stamp_user_id']
+            ];
+            
+            // Debug-Log für Stempel-Daten
+            error_log("Received stamp data: " . json_encode($stampData));
+            
+            // PDF mit Stempel erstellen
+            $stamper = new PDFStamper($uploadPath);
+            $stamper->addStamp($stampData);
+            $stampResult = $stamper->generate();
+            
+            if (!$stampResult['success']) {
+                sendJsonResponse(['error' => 'Failed to apply stamp: ' . $stampResult['error']], 500);
+            }
+            
+            // Originaldatei durch gestempelte Version ersetzen
+            if (file_exists($stamper->getOutputFile())) {
+                unlink($uploadPath); // Original löschen
+                rename($stamper->getOutputFile(), $uploadPath); // Gestempelte Version verwenden
+                error_log("Stamp applied successfully, file replaced");
+            }
+        }
+        
         $userData = $_SESSION['user_data'];
         $signatureData = [
             'filename' => $filename,
             'username' => $userData['username'],
             'firstname' => $userData['firstname'],
             'lastname' => $userData['lastname'],
-            'pdf_path' => $uploadPath
+            'pdf_path' => $uploadPath,
+            'stamp_applied' => !empty($stampData)
         ];
         
         $result = $signatureManager->createSignature($signatureData);
@@ -80,7 +125,9 @@ if ($method === 'POST') {
             sendJsonResponse([
                 'success' => true,
                 'signature' => $result,
-                'message' => 'PDF signature created successfully'
+                'message' => 'PDF signature created successfully',
+                'stamp_applied' => !empty($stampData),
+                'debug_stamp_data' => $stampData
             ]);
         } else {
             sendJsonResponse(['error' => 'Failed to create signature in database'], 500);

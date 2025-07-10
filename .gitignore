@@ -17,6 +17,7 @@ docker-compose.local.yml
 
 # Node.js / React Frontend
 frontend/node_modules/
+frontend/node_modules/.cache
 frontend/build/
 frontend/dist/
 frontend/npm-debug.log*
@@ -63,6 +64,7 @@ backend/access.log
 *.bak
 *.old
 *.orig
+*.pack
 
 # System-Dateien
 .DS_Store
